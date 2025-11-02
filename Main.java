@@ -3,12 +3,12 @@ import java.util.stream.Collectors;
 
 public class Main {
 
-    // Simple model for a restaurant
+    // -------- Restaurant Model --------
     static class Restaurant {
         final String name;
-        final String cuisine;     // e.g., "Mexican", "Italian", "American"
-        final int priceLevel;     // 1 = $, 2 = $$, 3 = $$$
-        final boolean takeout;    // offers takeout?
+        final String cuisine;
+        final int priceLevel; // 1 = $, 2 = $$, 3 = $$$
+        final boolean takeout;
 
         Restaurant(String name, String cuisine, int priceLevel, boolean takeout) {
             this.name = name;
@@ -20,34 +20,50 @@ public class Main {
         @Override
         public String toString() {
             String dollar = "$".repeat(Math.max(1, priceLevel));
-            return String.format("%s (%s, %s, %s)", name, cuisine, dollar, takeout ? "Takeout" : "Dine-in");
+            return String.format("%s (%s, %s, %s)",
+                    name, cuisine, dollar, takeout ? "Takeout" : "Dine-in");
         }
     }
 
+    // -------- Data --------
     private static final List<Restaurant> RESTAURANTS = List.of(
-        new Restaurant("Taco Loco", "Mexican", 1, true),
-        new Restaurant("Bella Pasta", "Italian", 2, true),
-        new Restaurant("Dragon Wok", "Chinese", 1, true),
-        new Restaurant("Sushi Zen", "Japanese", 3, false),
-        new Restaurant("Burger Barn", "American", 1, true),
+        new Restaurant("Taco Bell", "Mexican", 1, true),
+        new Restaurant("Chipolte", "Mexican", 1, true),
+        new Restaurant("Salsa's 3", "Mexican", 2, true),
+        new Restaurant("Viron", "Italian", 2, true),
+        new Restaurant("Bella G'as", "Italian", 3, false),
+        new Restaurant("China Dragon", "Chinese", 1, true),
+        new Restaurant("Asain Beastro", "Chinese", 2, true),
+        new Restaurant("Wendy's", "American", 1, true),
+        new Restaurant("Texas Roadhouse", "American", 1, true),
+        new Restaurant("Sushi House", "Japanese", 3, false),
+        new Restaurant("Funji Noodle", "Japanese", 2, true),
         new Restaurant("Curry House", "Indian", 2, true),
+        new Restaurant("Spice Route", "Indian", 3, false),
         new Restaurant("Le Petit Bistro", "French", 3, false),
-        new Restaurant("Mediterraneo", "Mediterranean", 2, true),
-        new Restaurant("K-BBQ Grill", "Korean", 3, false),
+        new Restaurant("Olive Tree", "Mediterranean", 2, true),
+        new Restaurant("K-BBQ", "Korean", 3, false),
         new Restaurant("Green Bowl", "Vegetarian", 1, true)
     );
 
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
+        Random random = new Random();
+
         println("🍽  Random Restaurant Generator");
         println("--------------------------------");
 
-        // Gather optional filters
+        // --- Build cuisine map for random rolls ---
+        Map<String, List<String>> restaurantsByCuisine = new HashMap<>();
+        for (Restaurant r : RESTAURANTS) {
+            restaurantsByCuisine.computeIfAbsent(r.cuisine, k -> new ArrayList<>()).add(r.name);
+        }
+
+        // --- Filter options ---
         String cuisine = ask(sc, "Filter by cuisine (press Enter to skip): ").trim();
         Integer priceLevel = askPrice(sc, "Max price level 1($) - 3($$$) (Enter to skip): ");
         Boolean wantsTakeout = askYesNoSkip(sc, "Require takeout? (y/n, Enter to skip): ");
 
-        // Apply filters
         List<Restaurant> pool = RESTAURANTS.stream()
             .filter(r -> cuisine.isEmpty() || r.cuisine.equalsIgnoreCase(cuisine))
             .filter(r -> priceLevel == null || r.priceLevel <= priceLevel)
@@ -59,16 +75,15 @@ public class Main {
             pool = new ArrayList<>(RESTAURANTS);
         }
 
-        // Shuffle for randomness
         List<Restaurant> shuffled = new ArrayList<>(pool);
-        Collections.shuffle(shuffled, new Random());
+        Collections.shuffle(shuffled, random);
 
-        // Interactive reroll
+        // --- Main loop ---
         int index = 0;
         while (true) {
             Restaurant pick = shuffled.get(index % shuffled.size());
             println("\n🎯 Suggestion: " + pick);
-            String action = ask(sc, "(r)eroll, (l)ist all, (q)uit: ").trim().toLowerCase();
+            String action = ask(sc, "(r)eroll, (l)ist all, (c)uisine roll, (q)uit: ").trim().toLowerCase();
 
             if (action.equals("q")) {
                 println("\nEnjoy your meal! 👋");
@@ -80,17 +95,25 @@ public class Main {
                 }
             } else if (action.equals("r")) {
                 index++;
-                // reshuffle occasionally for extra randomness
-                if (index % shuffled.size() == 0) Collections.shuffle(shuffled, new Random());
+                if (index % shuffled.size() == 0) Collections.shuffle(shuffled, random);
+            } else if (action.equals("c")) {
+                // --- NEW random cuisine & restaurant roll ---
+                List<String> cuisines = new ArrayList<>(restaurantsByCuisine.keySet());
+                String randomCuisine = cuisines.get(random.nextInt(cuisines.size()));
+                List<String> options = restaurantsByCuisine.get(randomCuisine);
+                String randomRestaurant = options.get(random.nextInt(options.size()));
+
+                println("\n🎲 Cuisine Rolled: " + randomCuisine);
+                println("🍴 Restaurant Picked: " + randomRestaurant);
             } else {
-                println("Please type r, l, or q.");
+                println("Please type r, l, c, or q.");
             }
         }
 
         sc.close();
     }
 
-    // -------- Helpers --------
+    // -------- Helper Methods --------
     private static String ask(Scanner sc, String prompt) {
         System.out.print(prompt);
         return sc.nextLine();
