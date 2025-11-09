@@ -1,0 +1,5 @@
+# Ignore local JavaFX SDK and build artifacts
+.javafx/
+*.class
+# User data created by the app
+favorites.txt
