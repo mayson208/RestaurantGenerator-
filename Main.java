@@ -81,12 +81,16 @@ public class Main extends Application {
         @Override
         public String toString() {
             return name + " (" + cuisine + " · " + priceTag() + " · "
-                   + (takeout ? "Takeout" : "Dine-in") + " · ★" + rating + " · " + miles + " mi)";
+                    + (takeout ? "Takeout" : "Dine-in") + " · ★" + rating + " · " + miles + " mi)";
         }
     }
 
     @Override
     public void start(Stage stage) {
+
+        // ✅ Ramen Icon (correct placement)
+        stage.getIcons().add(new Image("file:ramen.png"));
+
         double W = 640, H = 420;
 
         restaurants = createRestaurants();
@@ -98,7 +102,6 @@ public class Main extends Application {
 
         AnimationTimer loop = new AnimationTimer() {
             long lastTime;
-
             @Override
             public void handle(long now) {
                 if (lastTime == 0) lastTime = now;
@@ -135,7 +138,9 @@ public class Main extends Application {
         ui.setPadding(new Insets(20));
 
         StackPane root = new StackPane(canvas, bear, ui);
-        root.setBackground(new Background(new BackgroundFill(Color.web("#ffe6f0"), CornerRadii.EMPTY, Insets.EMPTY)));
+        root.setBackground(new Background(
+                new BackgroundFill(Color.web("#ffe6f0"), CornerRadii.EMPTY, Insets.EMPTY)
+        ));
 
         stage.setScene(new Scene(root, W, H));
         stage.setTitle("Date Night Dinner");
@@ -150,6 +155,7 @@ public class Main extends Application {
             double opacity = 0.4 + rand.nextDouble()*0.6;
             int shade = 150 + rand.nextInt(60);
             Color color = Color.rgb(255, shade, shade + 20);
+
             hearts.add(new Heart(Math.random()*W, Math.random()*H, size, speed, opacity, color));
         }
     }
@@ -186,9 +192,7 @@ public class Main extends Application {
     }
 
     private void drawHearts() {
-        for (Heart h : hearts) {
-            drawHeart(h.x, h.y, h.size, h.rotation, h.color, h.opacity);
-        }
+        for (Heart h : hearts) drawHeart(h.x, h.y, h.size, h.rotation, h.color, h.opacity);
     }
 
     private void drawBackground() {
@@ -221,6 +225,7 @@ public class Main extends Application {
         createRevealParticles(W, H);
 
         long[] last = {System.nanoTime()};
+
         AnimationTimer anim = new AnimationTimer() {
             double fade = 0;
 
@@ -244,6 +249,7 @@ public class Main extends Application {
                 if (particles.isEmpty() && fade >= 1) stop();
             }
         };
+
         anim.start();
     }
 
@@ -284,7 +290,7 @@ public class Main extends Application {
 
             if (p.life <= 0) it.remove();
             else {
-                gc.setFill(p.color.deriveColor(0, 1, 1, p.life));
+                gc.setFill(p.color.deriveColor(0,1,1,p.life));
                 gc.fillOval(p.x, p.y, p.size, p.size);
             }
         }
