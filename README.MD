@@ -9,7 +9,7 @@ This project was originally made as a fun, animated, interactive app for my girl
 
 Here is a screenshot of the current UI:
 
-![Date Night Dinner Screenshot](d72cfd06-24d9-4571-817a-50fcaec46f38.png)
+![App Screenshot](sandbox:/mnt/data/d72cfd06-24d9-4571-817a-50fcaec46f38.png)
 
 ---
 
