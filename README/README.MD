@@ -54,5 +54,4 @@ Here is a screenshot of the current UI:
 
 ---
 
-## 📦 **Project Structure**
 
